@@ -1,0 +1,23 @@
+name: "sync upstream branches"
+on:
+  workflow_dispatch:
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: pull upstream branches
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout --orphan luci-smartdns-dev
+          git clone -b luci-smartdns-dev https://github.com/xiaorouji/openwrt-passwall.git
+          cd openwrt-passwall
+          git checkout luci-smartdns-dev
+          git add -A
+          git commit -m "sync upstream branches luci smartdns dev `date +%Y/%m/%d\ %H:%M:%S\ %Z`" -a
+          git branch -D main
+          git branch -m main
+          git push -f origin main
